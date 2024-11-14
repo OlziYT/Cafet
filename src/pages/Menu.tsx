@@ -8,7 +8,7 @@ const mockMenus = [
       { type: 'Entrée', name: 'Salade César', photo: 'https://cdn.pratico-pratiques.com/app/uploads/sites/4/2018/08/30182949/salade-cesar-1.jpeg' },
       { type: 'Plat', name: 'Tenders poulet', photo: 'https://static.750g.com/images/1200-675/65bdeada9a9f3edadc5996e3653aaf55/tenders-poulet-img-9884.jpg' },
       { type: 'Dessert', name: 'Tarte aux pommes', photo: 'https://img.freepik.com/photos-premium/concept-nourriture-savoureuse-tarte-aux-pommes-fond-bois_185193-65063.jpg' },
-      { type: 'Menu complet', name: 'Tenders Frite pepsi', photo: 'https://lemiams.fr/wp-content/uploads/2021/06/MENU-TENDERS-X5.png' },
+      { type: 'Menu complet', name: 'Tenders Frite Coca', photo: 'https://www.pepechicken.fr/wp-content/uploads/TasterPepeChicken_TendersMealDeal-640x427.jpg' },
     ],
   },
   // Add more days...
