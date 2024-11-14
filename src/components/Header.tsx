@@ -20,7 +20,7 @@ const Header: React.FC = () => {
               <>
                 <li><Link to="/reservation" className="hover:underline">Réservation</Link></li>
                 {user.role === 'admin' && (
-                  <li><Link to="/admin" className="hover:underline">Admin</Link></li>
+                  <li><Link to="/admin" className="hover:underline">Tableau de bord</Link></li>
                 )}
                 <li className="flex items-center space-x-2">
                   <UserIcon size={18} />
