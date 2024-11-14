@@ -6,7 +6,7 @@ const mockMenus = [
     date: '2024-03-18',
     meals: [
       { type: 'Entrée', name: 'Salade César', photo: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80' },
-      { type: 'Plat', name: 'Poulet rôti', photo: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80' },
+      { type: 'Plat', name: 'Tenders poulet', photo: 'https://static.750g.com/images/1200-675/65bdeada9a9f3edadc5996e3653aaf55/tenders-poulet-img-9884.jpg' },
       { type: 'Dessert', name: 'Tarte aux pommes', photo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Tarte_aux_pommes_002.JPG/1280px-Tarte_aux_pommes_002.JPG' },
     ],
   },
