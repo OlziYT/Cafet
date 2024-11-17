@@ -38,3 +38,6 @@ jobs:
           folder: dist
           branch: gh-pages
           clean: true
+          
+      - name: Create .nojekyll file
+        run: touch dist/.nojekyll
