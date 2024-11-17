@@ -8,22 +8,22 @@ const tagConfig: Record<string, {
 }> = {
   'gluten-free': {
     icon: Wheat,
-    label: 'Gluten Free',
+    label: 'Sans gluten',
     className: 'bg-amber-100 text-amber-800',
   },
   'vegan': {
     icon: Leaf,
-    label: 'Vegan',
+    label: 'Végétalien',
     className: 'bg-green-100 text-green-800',
   },
   'vegetarian': {
     icon: Salad,
-    label: 'Vegetarian',
+    label: 'Végétarien',
     className: 'bg-emerald-100 text-emerald-800',
   },
   'organic': {
     icon: Leaf,
-    label: 'Organic',
+    label: 'Bio',
     className: 'bg-lime-100 text-lime-800',
   },
 };

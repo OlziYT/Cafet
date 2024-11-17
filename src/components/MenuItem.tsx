@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { DietaryTag } from './DietaryTag';
 import { Clock, Users, Check, X } from 'lucide-react';
 import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { useAuthStore } from '../store/auth';
 import { useReservation } from '../hooks/useReservation';
 import type { MenuItem as MenuItemType } from '../types';
@@ -27,7 +28,7 @@ export function MenuItem({ item: initialItem }: MenuItemProps) {
 
   const handleReserve = async () => {
     if (!user) {
-      toast.error('Please sign in to make a reservation');
+      toast.error('Veuillez vous connecter pour faire une réservation');
       return;
     }
 
@@ -39,7 +40,7 @@ export function MenuItem({ item: initialItem }: MenuItemProps) {
 
   const handleCancelReservation = async () => {
     if (!user) {
-      toast.error('Please sign in to cancel your reservation');
+      toast.error('Veuillez vous connecter pour annuler votre réservation');
       return;
     }
 
@@ -49,7 +50,6 @@ export function MenuItem({ item: initialItem }: MenuItemProps) {
     }
   };
 
-  // Update local state when initial item changes
   useEffect(() => {
     setItem(initialItem);
   }, [initialItem]);
@@ -65,7 +65,7 @@ export function MenuItem({ item: initialItem }: MenuItemProps) {
         {hasReservation && (
           <div className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
             <Check className="w-4 h-4" />
-            Reserved
+            Réservé
           </div>
         )}
       </div>
@@ -75,11 +75,11 @@ export function MenuItem({ item: initialItem }: MenuItemProps) {
           <div>
             <h3 className="text-xl font-semibold text-gray-900">{item.name}</h3>
             <p className="text-sm text-gray-500 mt-1">
-              {format(new Date(item.date), 'EEEE, MMMM d')}
+              {format(new Date(item.date), 'EEEE d MMMM', { locale: fr })}
             </p>
           </div>
           <span className="text-lg font-bold text-gray-900">
-            €{item.price.toFixed(2)}
+            {item.price.toFixed(2)} €
           </span>
         </div>
 
@@ -94,7 +94,7 @@ export function MenuItem({ item: initialItem }: MenuItemProps) {
         <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
           <div className="flex items-center text-sm text-gray-500">
             <Users className="w-4 h-4 mr-1" />
-            <span>{availableSpots} spots left</span>
+            <span>{availableSpots} places restantes</span>
           </div>
           {hasReservation ? (
             <button
@@ -107,7 +107,7 @@ export function MenuItem({ item: initialItem }: MenuItemProps) {
               ) : (
                 <>
                   <X className="w-4 h-4" />
-                  Cancel Reservation
+                  Annuler la réservation
                 </>
               )}
             </button>
@@ -126,11 +126,11 @@ export function MenuItem({ item: initialItem }: MenuItemProps) {
               {isReserving ? (
                 <Clock className="w-4 h-4 animate-spin" />
               ) : !isAuthenticated ? (
-                'Sign in to Reserve'
+                'Connectez-vous pour réserver'
               ) : isAvailable ? (
-                'Reserve'
+                'Réserver'
               ) : (
-                'Sold Out'
+                'Complet'
               )}
             </button>
           )}

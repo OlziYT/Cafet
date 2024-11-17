@@ -32,7 +32,7 @@ export function AdminPanel() {
 
       if (error) throw error;
 
-      toast.success('Menu item added successfully!');
+      toast.success('Plat ajouté avec succès !');
       // Reset form
       setName('');
       setDescription('');
@@ -49,11 +49,11 @@ export function AdminPanel() {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-6">Add Menu Item</h2>
+      <h2 className="text-2xl font-bold mb-6">Ajouter un plat au menu</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Name</label>
+          <label className="block text-sm font-medium text-gray-700">Nom du plat</label>
           <input
             type="text"
             required
@@ -76,7 +76,7 @@ export function AdminPanel() {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Price (€)</label>
+            <label className="block text-sm font-medium text-gray-700">Prix (€)</label>
             <input
               type="number"
               step="0.01"
@@ -88,7 +88,7 @@ export function AdminPanel() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Quota</label>
+            <label className="block text-sm font-medium text-gray-700">Quantité disponible</label>
             <input
               type="number"
               required
@@ -100,7 +100,7 @@ export function AdminPanel() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Image URL</label>
+          <label className="block text-sm font-medium text-gray-700">URL de l'image</label>
           <input
             type="url"
             required
@@ -112,23 +112,28 @@ export function AdminPanel() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Dietary Tags</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Régimes alimentaires</label>
           <div className="grid grid-cols-2 gap-2">
-            {['gluten-free', 'vegan', 'vegetarian', 'organic'].map((tag) => (
-              <label key={tag} className="inline-flex items-center">
+            {[
+              { id: 'gluten-free', label: 'Sans gluten' },
+              { id: 'vegan', label: 'Végétalien' },
+              { id: 'vegetarian', label: 'Végétarien' },
+              { id: 'organic', label: 'Bio' }
+            ].map(({ id, label }) => (
+              <label key={id} className="inline-flex items-center">
                 <input
                   type="checkbox"
-                  checked={dietaryTags.includes(tag)}
+                  checked={dietaryTags.includes(id)}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setDietaryTags([...dietaryTags, tag]);
+                      setDietaryTags([...dietaryTags, id]);
                     } else {
-                      setDietaryTags(dietaryTags.filter((t) => t !== tag));
+                      setDietaryTags(dietaryTags.filter((t) => t !== id));
                     }
                   }}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="ml-2 text-sm text-gray-600 capitalize">{tag}</span>
+                <span className="ml-2 text-sm text-gray-600">{label}</span>
               </label>
             ))}
           </div>
@@ -140,11 +145,11 @@ export function AdminPanel() {
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {loading ? (
-            <>Loading...</>
+            <>Chargement...</>
           ) : (
             <>
               <Plus className="w-4 h-4" />
-              Add Menu Item
+              Ajouter au menu
             </>
           )}
         </button>

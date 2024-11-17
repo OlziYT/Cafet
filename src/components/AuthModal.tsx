@@ -31,7 +31,7 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
         });
         if (error) throw error;
         if (data.user) {
-          toast.success('Account created! Please check your email to verify your account.');
+          toast.success('Compte créé ! Veuillez vérifier votre email pour confirmer votre compte.');
           onClose();
         }
       } else {
@@ -50,7 +50,7 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
             name: data.user.user_metadata.name,
             role: data.user.user_metadata.role || 'user'
           });
-          toast.success('Welcome back!');
+          toast.success('Bon retour parmi nous !');
           onClose();
         }
       }
@@ -72,13 +72,13 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
         </button>
 
         <h2 className="text-2xl font-bold mb-6">
-          {mode === 'signin' ? 'Sign In' : 'Create Account'}
+          {mode === 'signin' ? 'Connexion' : 'Créer un compte'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'signup' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <label className="block text-sm font-medium text-gray-700">Nom</label>
               <input
                 type="text"
                 required
@@ -101,7 +101,7 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-sm font-medium text-gray-700">Mot de passe</label>
             <input
               type="password"
               required
@@ -121,7 +121,7 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                Remember me
+                Se souvenir de moi
               </label>
             </div>
           )}
@@ -131,29 +131,29 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
             disabled={loading}
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
-            {loading ? 'Loading...' : mode === 'signin' ? 'Sign In' : 'Create Account'}
+            {loading ? 'Chargement...' : mode === 'signin' ? 'Se connecter' : 'Créer un compte'}
           </button>
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
           {mode === 'signin' ? (
             <>
-              Don't have an account?{' '}
+              Pas encore de compte ?{' '}
               <button
                 onClick={() => setMode('signup')}
                 className="text-blue-600 hover:text-blue-500 font-medium"
               >
-                Sign up
+                S'inscrire
               </button>
             </>
           ) : (
             <>
-              Already have an account?{' '}
+              Déjà un compte ?{' '}
               <button
                 onClick={() => setMode('signin')}
                 className="text-blue-600 hover:text-blue-500 font-medium"
               >
-                Sign in
+                Se connecter
               </button>
             </>
           )}

@@ -48,17 +48,17 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <UtensilsCrossed className="h-8 w-8 text-blue-600" />
-              <h1 className="ml-2 text-2xl font-bold text-gray-900">School Meals</h1>
+              <h1 className="ml-2 text-2xl font-bold text-gray-900">Repas Scolaires</h1>
             </div>
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
-                <span className="text-gray-600">Welcome, {user?.name}</span>
+                <span className="text-gray-600">Bienvenue, {user?.name}</span>
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
                 >
                   <LogOut className="w-4 h-4" />
-                  Sign Out
+                  Se déconnecter
                 </button>
               </div>
             ) : (
@@ -66,7 +66,7 @@ function App() {
                 onClick={() => setShowAuthModal(true)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
               >
-                Sign In
+                Se connecter
               </button>
             )}
           </div>
@@ -81,10 +81,10 @@ function App() {
         )}
 
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">Today's Menu</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Menu du jour</h2>
           <div className="flex gap-4">
-            <button className="text-gray-600 hover:text-gray-900">Previous</button>
-            <button className="text-gray-600 hover:text-gray-900">Next</button>
+            <button className="text-gray-600 hover:text-gray-900">Précédent</button>
+            <button className="text-gray-600 hover:text-gray-900">Suivant</button>
           </div>
         </div>
         
