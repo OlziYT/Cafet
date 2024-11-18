@@ -1,35 +1,35 @@
-# School Meal Management
+# Gestion des repas scolaires
 
-A modern web application for managing school meals and reservations.
+Une application Web moderne pour la gestion des repas scolaires et des réservations.
 
-## Development
+## Développement
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Deployment
+## Déploiement
 
-The application is automatically deployed to GitHub Pages when changes are pushed to the main branch. To deploy manually:
+L'application est automatiquement déployée sur GitHub Pages lorsque les modifications sont transmises à la branche principale. Pour déployer manuellement :
 
 ```bash
 npm run deploy
 ```
 
-## Environment Variables
+## Variables d'environnement
 
-Create a `.env` file with the following variables:
+Créez un fichier `.env` avec les variables suivantes :
 
 ```
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-## Features
+## Fonctionnalités
 
-- Menu item management
-- Meal reservations
-- User authentication
-- Admin panel
-- Dietary preferences
+- Gestion des éléments de menu
+- Réservations de repas
+- Authentification des utilisateurs
+- Panneau d'administration
+- Préférences alimentaires
