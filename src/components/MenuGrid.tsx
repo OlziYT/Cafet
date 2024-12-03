@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { MenuItem } from './MenuItem';
-import type { MenuItem as MenuItemType, DietaryTag } from '../types';
+import type { MenuItem as MenuItemType } from '../types';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 import { format, startOfWeek, addDays, isSameDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useMenuStore } from '../store/menu';
 import { LoadingSpinner } from './LoadingSpinner';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 
 interface DatabaseMenuItem {
   id: string;
@@ -18,7 +18,7 @@ interface DatabaseMenuItem {
   date: string;
   quota: number;
   reservations: number;
-  dietary_tags: DietaryTag[];
+  dietary_tags: string[];
 }
 
 const transformMenuItem = (item: DatabaseMenuItem): MenuItemType => ({
@@ -77,13 +77,12 @@ export function MenuGrid() {
         if (error) throw error;
         
         if (mounted) {
-          const transformedData = (data || []).map((item: DatabaseMenuItem) => transformMenuItem(item));
+          const transformedData = (data || []).map(transformMenuItem);
           setItems(transformedData);
         }
-      } catch (error: unknown) {
-        const err = error as { message: string };
+      } catch (error: any) {
         toast.error('Erreur lors du chargement du menu');
-        console.error('Error:', err.message);
+        console.error('Error:', error.message);
       } finally {
         if (mounted) {
           setLoading(false);
@@ -153,14 +152,19 @@ export function MenuGrid() {
 
     if (filteredItems.length === 0) {
       return (
-        <div className="text-center py-12">
-          <p className="text-gray-500">Aucun repas disponible pour cette date.</p>
+        <div className="text-center py-12 bg-marron-50 rounded-lg border-2 border-dashed border-marron-200">
+          <p className="text-marron-600 font-title text-xl">
+            Pas de menu disponible pour cette date
+          </p>
+          <p className="text-marron-500 mt-2">
+            Revenez plus tard pour découvrir nos délicieuses créations !
+          </p>
         </div>
       );
     }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.map((item) => (
           <MenuItem key={item.id} item={item} />
         ))}
@@ -169,60 +173,65 @@ export function MenuGrid() {
   };
 
   return (
-    <div>
-      <div className="flex flex-col gap-6 mb-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-6">
+    <div className="space-y-8">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Calendar className="w-8 h-8 text-bordeaux-600" />
             <h2 
               onClick={() => {
                 setCurrentDate(new Date());
                 setViewMode('day');
               }}
-              className="text-3xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
+              className="text-3xl font-title text-marron-800 hover:text-bordeaux-600 cursor-pointer"
             >
               {viewMode === 'day' && isSameDay(currentDate, new Date()) 
-                ? 'Menu du jour'
+                ? "Menu du jour"
                 : viewMode === 'day'
                   ? format(currentDate, 'EEEE d MMMM yyyy', { locale: fr })
                   : `Semaine du ${format(weekDays[0], 'd MMMM', { locale: fr })} au ${format(weekDays[4], 'd MMMM yyyy', { locale: fr })}`
               }
             </h2>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-sm">
+
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex rounded-lg overflow-hidden border border-marron-200">
               <button
                 onClick={() => setViewMode('day')}
-                className={`px-3 py-1 rounded-l-md border ${
-                  viewMode === 'day' 
-                    ? 'bg-blue-600 text-white border-blue-600' 
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                className={`px-4 py-2 font-medium ${
+                  viewMode === 'day'
+                    ? 'bg-marron-600 text-white'
+                    : 'bg-white text-marron-600 hover:bg-marron-50'
                 }`}
               >
                 Jour
               </button>
               <button
                 onClick={() => setViewMode('week')}
-                className={`px-3 py-1 rounded-r-md border -ml-[1px] ${
-                  viewMode === 'week' 
-                    ? 'bg-blue-600 text-white border-blue-600' 
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                className={`px-4 py-2 font-medium ${
+                  viewMode === 'week'
+                    ? 'bg-marron-600 text-white'
+                    : 'bg-white text-marron-600 hover:bg-marron-50'
                 }`}
               >
                 Semaine
               </button>
             </div>
+
             <div className="flex gap-2">
               <button
                 onClick={() => navigateDate('prev')}
-                className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors flex items-center gap-2"
+                className="flex items-center gap-2 px-4 py-2 text-marron-600 hover:text-bordeaux-600 hover:bg-marron-50 rounded-lg transition-colors"
               >
-                <ChevronLeft className="w-5 h-5" /> Précédent
+                <ChevronLeft className="w-5 h-5" />
+                <span className="font-medium">Précédent</span>
               </button>
               <button
                 onClick={() => navigateDate('next')}
-                className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors flex items-center gap-2"
+                className="flex items-center gap-2 px-4 py-2 text-marron-600 hover:text-bordeaux-600 hover:bg-marron-50 rounded-lg transition-colors"
               >
-                Suivant <ChevronRight className="w-5 h-5" />
+                <span className="font-medium">Suivant</span>
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -232,10 +241,10 @@ export function MenuGrid() {
       {viewMode === 'day' ? (
         renderItems(currentDate)
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-12">
           {weekDays.map((date) => (
-            <div key={date.toISOString()}>
-              <h3 className="text-xl font-semibold mb-4">
+            <div key={date.toISOString()} className="space-y-4">
+              <h3 className="text-2xl font-title text-marron-700 border-b-2 border-marron-200 pb-2">
                 {format(date, 'EEEE d MMMM', { locale: fr })}
               </h3>
               {renderItems(date)}

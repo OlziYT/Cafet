@@ -1,3 +1,93 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import './styles/animations.css';
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer components {
+  .menu-card {
+    @apply relative bg-white rounded-xl shadow-md overflow-hidden border border-marron-100;
+    animation: appear 0.6s ease-out;
+  }
+  
+  .menu-card:hover {
+    @apply shadow-xl;
+    animation: sizzle 1s ease-in-out;
+  }
+
+  .menu-image {
+    @apply relative h-48 overflow-hidden;
+  }
+
+  .menu-image::after {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent;
+  }
+
+  .menu-image img {
+    @apply w-full h-full object-cover transition-transform duration-500;
+  }
+
+  .menu-card:hover .menu-image img {
+    @apply scale-105;
+  }
+
+  .menu-title {
+    @apply text-white text-xl font-title font-bold leading-tight;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .menu-price {
+    @apply bg-bordeaux-600 text-white px-4 py-2 rounded-lg text-lg font-bold shadow-md;
+    transform: rotate(-2deg);
+  }
+
+  .menu-card:hover .menu-price {
+    @apply bg-bordeaux-700;
+    transform: rotate(0deg);
+  }
+
+  .menu-description {
+    @apply text-marron-700 leading-relaxed;
+    line-height: 1.7;
+  }
+
+  .menu-button {
+    @apply flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all duration-300;
+  }
+
+  .menu-button-reserve {
+    @apply bg-olive-600 text-white;
+    box-shadow: 0 4px 0 theme('colors.olive.700');
+  }
+
+  .menu-button-reserve:hover {
+    @apply bg-olive-700 transform -translate-y-1;
+    box-shadow: 0 6px 0 theme('colors.olive.800');
+  }
+
+  .menu-button-cancel {
+    @apply text-bordeaux-600 border-2 border-bordeaux-200;
+  }
+
+  .menu-button-cancel:hover {
+    @apply bg-bordeaux-50 border-bordeaux-300;
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

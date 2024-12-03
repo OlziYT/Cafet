@@ -1,0 +1,17 @@
+@keyframes sizzle {
+  0% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-2px) rotate(-1deg); }
+  75% { transform: translateY(2px) rotate(1deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+
+@keyframes steam {
+  0% { opacity: 0; transform: translateY(0); }
+  50% { opacity: 0.6; transform: translateY(-10px); }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
+@keyframes plate-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
