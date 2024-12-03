@@ -152,12 +152,12 @@ export function MenuGrid() {
 
     if (filteredItems.length === 0) {
       return (
-        <div className="text-center py-12 bg-marron-50 rounded-lg border-2 border-dashed border-marron-200">
-          <p className="text-marron-600 font-title text-xl">
+        <div className="text-center py-12 bg-marron-50 dark:bg-marron-900/50 rounded-lg border-2 border-dashed border-marron-200 dark:border-marron-700">
+          <p className="text-marron-600 dark:text-marron-300 font-title text-xl">
             Pas de menu disponible pour cette date
           </p>
-          <p className="text-marron-500 mt-2">
-            Revenez plus tard pour découvrir nos délicieuses créations !
+          <p className="text-marron-500 dark:text-marron-400 mt-2">
+            Le menu sera bientôt disponible. Revenez un peu plus tard !
           </p>
         </div>
       );
@@ -177,13 +177,13 @@ export function MenuGrid() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Calendar className="w-8 h-8 text-bordeaux-600" />
+            <Calendar className="w-8 h-8 text-bordeaux-600 dark:text-bordeaux-400" />
             <h2 
               onClick={() => {
                 setCurrentDate(new Date());
                 setViewMode('day');
               }}
-              className="text-3xl font-title text-marron-800 hover:text-bordeaux-600 cursor-pointer"
+              className="text-3xl font-title text-marron-800 dark:text-marron-100 hover:text-bordeaux-600 dark:hover:text-bordeaux-400 cursor-pointer"
             >
               {viewMode === 'day' && isSameDay(currentDate, new Date()) 
                 ? "Menu du jour"
@@ -195,14 +195,14 @@ export function MenuGrid() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex rounded-lg overflow-hidden border border-marron-200">
+            <div className="flex rounded-lg overflow-hidden border border-marron-200 dark:border-marron-700">
               <button
                 onClick={() => setViewMode('day')}
                 className={`px-4 py-2 font-medium ${
                   viewMode === 'day'
-                    ? 'bg-marron-600 text-white'
-                    : 'bg-white text-marron-600 hover:bg-marron-50'
-                }`}
+                    ? 'bg-marron-600 dark:bg-marron-700 text-white'
+                    : 'bg-white dark:bg-marron-800 text-marron-600 dark:text-marron-300 hover:bg-marron-50 dark:hover:bg-marron-700'
+                } transition-colors`}
               >
                 Jour
               </button>
@@ -210,9 +210,9 @@ export function MenuGrid() {
                 onClick={() => setViewMode('week')}
                 className={`px-4 py-2 font-medium ${
                   viewMode === 'week'
-                    ? 'bg-marron-600 text-white'
-                    : 'bg-white text-marron-600 hover:bg-marron-50'
-                }`}
+                    ? 'bg-marron-600 dark:bg-marron-700 text-white'
+                    : 'bg-white dark:bg-marron-800 text-marron-600 dark:text-marron-300 hover:bg-marron-50 dark:hover:bg-marron-700'
+                } transition-colors`}
               >
                 Semaine
               </button>
@@ -221,14 +221,14 @@ export function MenuGrid() {
             <div className="flex gap-2">
               <button
                 onClick={() => navigateDate('prev')}
-                className="flex items-center gap-2 px-4 py-2 text-marron-600 hover:text-bordeaux-600 hover:bg-marron-50 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-marron-600 dark:text-marron-300 hover:text-bordeaux-600 dark:hover:text-bordeaux-400 hover:bg-marron-50 dark:hover:bg-marron-700/50 rounded-lg transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
                 <span className="font-medium">Précédent</span>
               </button>
               <button
                 onClick={() => navigateDate('next')}
-                className="flex items-center gap-2 px-4 py-2 text-marron-600 hover:text-bordeaux-600 hover:bg-marron-50 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-marron-600 dark:text-marron-300 hover:text-bordeaux-600 dark:hover:text-bordeaux-400 hover:bg-marron-50 dark:hover:bg-marron-700/50 rounded-lg transition-colors"
               >
                 <span className="font-medium">Suivant</span>
                 <ChevronRight className="w-5 h-5" />
@@ -244,7 +244,7 @@ export function MenuGrid() {
         <div className="space-y-12">
           {weekDays.map((date) => (
             <div key={date.toISOString()} className="space-y-4">
-              <h3 className="text-2xl font-title text-marron-700 border-b-2 border-marron-200 pb-2">
+              <h3 className="text-2xl font-title text-marron-700 dark:text-marron-200 border-b-2 border-marron-200 dark:border-marron-700 pb-2">
                 {format(date, 'EEEE d MMMM', { locale: fr })}
               </h3>
               {renderItems(date)}

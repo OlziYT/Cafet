@@ -31,7 +31,7 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
         });
         if (error) throw error;
         if (data.user) {
-          toast.success('Compte créé ! Veuillez vérifier votre email pour confirmer votre compte.');
+          toast.success('Compte créé ! Vérifiez votre boîte mail pour confirmer votre compte.');
           onClose();
         }
       } else {
@@ -50,7 +50,7 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
             name: data.user.user_metadata.name,
             role: data.user.user_metadata.role || 'user'
           });
-          toast.success('Bon retour parmi nous !');
+          toast.success('Connexion réussie !');
           onClose();
         }
       }
@@ -62,52 +62,55 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-marron-900 rounded-2xl max-w-md w-full p-8 relative border border-marron-200 dark:border-marron-700 shadow-xl">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          className="absolute top-4 right-4 text-marron-400 hover:text-marron-600 dark:text-marron-500 dark:hover:text-marron-300 transition-colors"
         >
           <X className="w-6 h-6" />
         </button>
 
-        <h2 className="text-2xl font-bold mb-6">
-          {mode === 'signin' ? 'Connexion' : 'Créer un compte'}
+        <h2 className="text-2xl font-title text-marron-800 dark:text-marron-100 mb-6">
+          {mode === 'signin' ? 'Accès à mon compte' : 'Créer mon compte'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'signup' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700">Nom</label>
+              <label className="block text-sm font-medium text-marron-700 dark:text-marron-200 mb-1">Nom complet</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                className="w-full px-4 py-2.5 rounded-lg border border-marron-200 dark:border-marron-600 bg-white dark:bg-marron-800 text-marron-800 dark:text-marron-100 focus:border-olive-500 dark:focus:border-olive-400 focus:ring-2 focus:ring-olive-200 dark:focus:ring-olive-900 transition-colors"
+                placeholder="Jean Dupont"
               />
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-marron-700 dark:text-marron-200 mb-1">Email</label>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+              className="w-full px-4 py-2.5 rounded-lg border border-marron-200 dark:border-marron-600 bg-white dark:bg-marron-800 text-marron-800 dark:text-marron-100 focus:border-olive-500 dark:focus:border-olive-400 focus:ring-2 focus:ring-olive-200 dark:focus:ring-olive-900 transition-colors"
+              placeholder="jean.dupont@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Mot de passe</label>
+            <label className="block text-sm font-medium text-marron-700 dark:text-marron-200 mb-1">Mot de passe</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+              className="w-full px-4 py-2.5 rounded-lg border border-marron-200 dark:border-marron-600 bg-white dark:bg-marron-800 text-marron-800 dark:text-marron-100 focus:border-olive-500 dark:focus:border-olive-400 focus:ring-2 focus:ring-olive-200 dark:focus:ring-olive-900 transition-colors"
+              placeholder="••••••••"
             />
           </div>
 
@@ -118,10 +121,10 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
                 id="remember-me"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="w-4 h-4 rounded border-marron-300 dark:border-marron-600 text-olive-600 dark:text-olive-500 focus:ring-olive-500 dark:focus:ring-olive-400 bg-white dark:bg-marron-800"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                Se souvenir de moi
+              <label htmlFor="remember-me" className="ml-2 text-sm text-marron-600 dark:text-marron-300">
+                Rester connecté
               </label>
             </div>
           )}
@@ -129,19 +132,19 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="w-full bg-olive-600 dark:bg-olive-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-olive-700 dark:hover:bg-olive-600 disabled:opacity-50 transition-colors mt-6"
           >
-            {loading ? 'Chargement...' : mode === 'signin' ? 'Se connecter' : 'Créer un compte'}
+            {loading ? 'Chargement...' : mode === 'signin' ? 'Se connecter' : 'Créer mon compte'}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-marron-600 dark:text-marron-300">
           {mode === 'signin' ? (
             <>
               Pas encore de compte ?{' '}
               <button
                 onClick={() => setMode('signup')}
-                className="text-blue-600 hover:text-blue-500 font-medium"
+                className="text-olive-600 dark:text-olive-400 hover:text-olive-700 dark:hover:text-olive-300 font-medium"
               >
                 S'inscrire
               </button>
@@ -151,7 +154,7 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
               Déjà un compte ?{' '}
               <button
                 onClick={() => setMode('signin')}
-                className="text-blue-600 hover:text-blue-500 font-medium"
+                className="text-olive-600 dark:text-olive-400 hover:text-olive-700 dark:hover:text-olive-300 font-medium"
               >
                 Se connecter
               </button>
