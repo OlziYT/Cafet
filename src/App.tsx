@@ -6,6 +6,7 @@ import { AdminPanel } from './components/AdminPanel';
 import { useAuthStore } from './store/auth';
 import { supabase } from './lib/supabase';
 import { Toaster } from 'react-hot-toast';
+import { LoadingSpinner } from './components/LoadingSpinner';
 
 function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -35,7 +36,7 @@ function App() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -47,71 +48,60 @@ function App() {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
+            <div 
+              onClick={() => {
+                if (showAdminPanel) {
+                  setShowAdminPanel(false);
+                }
+              }}
+              className="flex items-center cursor-pointer"
+            >
               <UtensilsCrossed className="h-8 w-8 text-blue-600" />
               <h1 className="ml-2 text-2xl font-bold text-gray-900">Repas Scolaires</h1>
             </div>
-            {isAuthenticated ? (
-              <div className="flex items-center gap-4">
-                <span className="text-gray-600">Bienvenue, {user?.name}</span>
+            <div className="flex items-center gap-4">
+              {user?.role === 'admin' && (
                 <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+                  onClick={() => setShowAdminPanel(!showAdminPanel)}
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
-                  <LogOut className="w-4 h-4" />
-                  Se déconnecter
+                  {showAdminPanel ? (
+                    'Retour au menu'
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Ajouter un repas
+                    </>
+                  )}
                 </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowAuthModal(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-              >
-                Se connecter
-              </button>
-            )}
+              )}
+              {isAuthenticated ? (
+                <div className="flex items-center gap-4">
+                  <span className="text-gray-600">Bienvenue, {user?.name}</span>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Se déconnecter
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                >
+                  Se connecter
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {user?.role === 'admin' && (
-          <div className="mb-8">
-            {showAdminPanel ? (
-              <>
-                <button
-                  onClick={() => setShowAdminPanel(false)}
-                  className="mb-4 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  Retour au menu
-                </button>
-                <AdminPanel />
-              </>
-            ) : (
-              <button
-                onClick={() => setShowAdminPanel(true)}
-                className="mb-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Ajouter un repas
-              </button>
-            )}
-          </div>
-        )}
-
-        {!showAdminPanel && (
-          <>
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900">Menu du jour</h2>
-              <div className="flex gap-4">
-                <button className="text-gray-600 hover:text-gray-900">Précédent</button>
-                <button className="text-gray-600 hover:text-gray-900">Suivant</button>
-              </div>
-            </div>
-            
-            <MenuGrid />
-          </>
-        )}
+        {!showAdminPanel && <MenuGrid />}
+        {showAdminPanel && <AdminPanel />}
       </main>
 
       {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}

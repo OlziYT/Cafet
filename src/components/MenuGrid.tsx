@@ -1,11 +1,37 @@
 import { useState, useEffect } from 'react';
 import { MenuItem } from './MenuItem';
-import type { MenuItem as MenuItemType } from '../types';
+import type { MenuItem as MenuItemType, DietaryTag } from '../types';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 import { format, startOfWeek, addDays, isSameDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useMenuStore } from '../store/menu';
+import { LoadingSpinner } from './LoadingSpinner';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+interface DatabaseMenuItem {
+  id: string;
+  name: string;
+  description: string;
+  image_url: string;
+  price: number;
+  date: string;
+  quota: number;
+  reservations: number;
+  dietary_tags: DietaryTag[];
+}
+
+const transformMenuItem = (item: DatabaseMenuItem): MenuItemType => ({
+  id: item.id,
+  name: item.name,
+  description: item.description,
+  imageUrl: item.image_url,
+  price: item.price,
+  date: item.date,
+  quota: item.quota,
+  reservations: item.reservations,
+  dietaryTags: item.dietary_tags
+});
 
 export function MenuGrid() {
   const [items, setItems] = useState<MenuItemType[]>([]);
@@ -16,6 +42,17 @@ export function MenuGrid() {
   const weekDays = Array.from({ length: 5 }, (_, i) => 
     addDays(startOfWeek(currentDate, { weekStartsOn: 1 }), i)
   );
+
+  useEffect(() => {
+    useMenuStore.getState().setResetView(() => {
+      setCurrentDate(new Date());
+      setViewMode('day');
+    });
+
+    return () => {
+      useMenuStore.getState().setResetView(() => {});
+    };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -40,23 +77,13 @@ export function MenuGrid() {
         if (error) throw error;
         
         if (mounted) {
-          const transformedData = (data || []).map(item => ({
-            id: item.id,
-            name: item.name,
-            description: item.description,
-            imageUrl: item.image_url,
-            price: item.price,
-            date: item.date,
-            quota: item.quota,
-            reservations: item.reservations,
-            dietaryTags: item.dietary_tags
-          }));
-          
+          const transformedData = (data || []).map((item: DatabaseMenuItem) => transformMenuItem(item));
           setItems(transformedData);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const err = error as { message: string };
         toast.error('Erreur lors du chargement du menu');
-        console.error('Error:', error.message);
+        console.error('Error:', err.message);
       } finally {
         if (mounted) {
           setLoading(false);
@@ -78,18 +105,8 @@ export function MenuGrid() {
         (payload) => {
           if (payload.new) {
             setItems(currentItems => {
-              const newItem = payload.new as any;
-              const transformedItem = {
-                id: newItem.id,
-                name: newItem.name,
-                description: newItem.description,
-                imageUrl: newItem.image_url,
-                price: newItem.price,
-                date: newItem.date,
-                quota: newItem.quota,
-                reservations: newItem.reservations,
-                dietaryTags: newItem.dietary_tags
-              };
+              const newItem = payload.new as DatabaseMenuItem;
+              const transformedItem = transformMenuItem(newItem);
 
               const existingIndex = currentItems.findIndex(item => item.id === newItem.id);
               
@@ -110,7 +127,7 @@ export function MenuGrid() {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [currentDate, viewMode]);
+  }, [currentDate, viewMode, weekDays]);
 
   const navigateDate = (direction: 'prev' | 'next') => {
     setCurrentDate(current => {
@@ -124,7 +141,7 @@ export function MenuGrid() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <LoadingSpinner />
       </div>
     );
   }
@@ -153,37 +170,62 @@ export function MenuGrid() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
-          <select
-            value={viewMode}
-            onChange={(e) => setViewMode(e.target.value as 'day' | 'week')}
-            className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          >
-            <option value="day">Vue par jour</option>
-            <option value="week">Vue par semaine</option>
-          </select>
-          <div className="text-lg font-semibold">
-            {viewMode === 'day' ? (
-              format(currentDate, 'EEEE d MMMM yyyy', { locale: fr })
-            ) : (
-              `Semaine du ${format(weekDays[0], 'd MMMM', { locale: fr })} au ${format(weekDays[4], 'd MMMM yyyy', { locale: fr })}`
-            )}
+      <div className="flex flex-col gap-6 mb-6">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-6">
+            <h2 
+              onClick={() => {
+                setCurrentDate(new Date());
+                setViewMode('day');
+              }}
+              className="text-3xl font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
+            >
+              {viewMode === 'day' && isSameDay(currentDate, new Date()) 
+                ? 'Menu du jour'
+                : viewMode === 'day'
+                  ? format(currentDate, 'EEEE d MMMM yyyy', { locale: fr })
+                  : `Semaine du ${format(weekDays[0], 'd MMMM', { locale: fr })} au ${format(weekDays[4], 'd MMMM yyyy', { locale: fr })}`
+              }
+            </h2>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => navigateDate('prev')}
-            className="p-2 rounded-full hover:bg-gray-100"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => navigateDate('next')}
-            className="p-2 rounded-full hover:bg-gray-100"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm">
+              <button
+                onClick={() => setViewMode('day')}
+                className={`px-3 py-1 rounded-l-md border ${
+                  viewMode === 'day' 
+                    ? 'bg-blue-600 text-white border-blue-600' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                Jour
+              </button>
+              <button
+                onClick={() => setViewMode('week')}
+                className={`px-3 py-1 rounded-r-md border -ml-[1px] ${
+                  viewMode === 'week' 
+                    ? 'bg-blue-600 text-white border-blue-600' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                Semaine
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => navigateDate('prev')}
+                className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors flex items-center gap-2"
+              >
+                <ChevronLeft className="w-5 h-5" /> Précédent
+              </button>
+              <button
+                onClick={() => navigateDate('next')}
+                className="px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors flex items-center gap-2"
+              >
+                Suivant <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
