@@ -1,20 +1,23 @@
 import { useState, useEffect } from 'react';
 import { DietaryTag } from './DietaryTag';
-import { Clock, Users, Check, X, UtensilsCrossed } from 'lucide-react';
+import { Clock, Users, Check, X, UtensilsCrossed, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useAuthStore } from '../store/auth';
 import { useReservation } from '../hooks/useReservation';
 import type { MenuItem as MenuItemType } from '../types';
+import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
 type MenuItemProps = {
   item: MenuItemType;
+  onDelete?: () => void;
 };
 
-export function MenuItem({ item: initialItem }: MenuItemProps) {
+export function MenuItem({ item: initialItem, onDelete }: MenuItemProps) {
   const [item, setItem] = useState(initialItem);
   const { isAuthenticated, user } = useAuthStore();
+  const [isDeleting, setIsDeleting] = useState(false);
   const availableSpots = item.quota - item.reservations;
   const isAvailable = availableSpots > 0;
 
@@ -25,6 +28,45 @@ export function MenuItem({ item: initialItem }: MenuItemProps) {
     reserve,
     cancel
   } = useReservation(item, user);
+
+  const handleDelete = async () => {
+    if (!user?.role === 'admin') return;
+    
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce plat ? Cette action supprimera également toutes les réservations associées.')) return;
+    
+    setIsDeleting(true);
+    try {
+      // Start a transaction to ensure all deletions succeed or none do
+      const { error: transactionError } = await supabase.rpc('delete_menu_item_cascade', {
+        p_menu_item_id: item.id
+      });
+
+      if (transactionError) throw transactionError;
+
+      // If the transaction succeeded, delete the image from storage
+      if (item.imageUrl) {
+        const fileName = item.imageUrl.split('/').pop();
+        if (fileName) {
+          const { error: storageError } = await supabase.storage
+            .from('meals')
+            .remove([`meal-images/${fileName}`]);
+
+          if (storageError) {
+            console.error('Error deleting image:', storageError);
+            // Don't throw here as the main deletion was successful
+          }
+        }
+      }
+
+      toast.success('Plat et réservations associées supprimés avec succès');
+      onDelete?.();
+    } catch (error: any) {
+      toast.error('Erreur lors de la suppression du plat');
+      console.error('Error:', error.message);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleReserve = async () => {
     if (!user) {
@@ -69,6 +111,20 @@ export function MenuItem({ item: initialItem }: MenuItemProps) {
             <Check className="w-4 h-4" />
             Réservé
           </div>
+        )}
+
+        {user?.role === 'admin' && (
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="absolute top-4 left-4 bg-bordeaux-600 dark:bg-bordeaux-500 text-white p-2 rounded-lg shadow-lg hover:bg-bordeaux-700 dark:hover:bg-bordeaux-600 transition-colors"
+          >
+            {isDeleting ? (
+              <Clock className="w-5 h-5 animate-spin" />
+            ) : (
+              <Trash2 className="w-5 h-5" />
+            )}
+          </button>
         )}
         
         <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">

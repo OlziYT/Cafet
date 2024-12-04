@@ -43,6 +43,10 @@ export function MenuGrid() {
     addDays(startOfWeek(currentDate, { weekStartsOn: 1 }), i)
   );
 
+  const handleDeleteItem = (itemId: string) => {
+    setItems(currentItems => currentItems.filter(item => item.id !== itemId));
+  };
+
   useEffect(() => {
     useMenuStore.getState().setResetView(() => {
       setCurrentDate(new Date());
@@ -156,7 +160,7 @@ export function MenuGrid() {
           <p className="text-marron-600 dark:text-marron-300 font-title text-xl">
             Pas de menu disponible pour cette date
           </p>
-          <p className="text-marron-500 dark:text-marron-400 mt-2">
+          <p className="mt-2 text-marron-500 dark:text-marron-400">
             Le menu sera bientôt disponible. Revenez un peu plus tard !
           </p>
         </div>
@@ -166,7 +170,11 @@ export function MenuGrid() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredItems.map((item) => (
-          <MenuItem key={item.id} item={item} />
+          <MenuItem 
+            key={item.id} 
+            item={item} 
+            onDelete={() => handleDeleteItem(item.id)}
+          />
         ))}
       </div>
     );

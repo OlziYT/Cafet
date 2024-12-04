@@ -1,26 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 import type { User, MenuItem } from '../types';
+import { 
+  checkReservation,
+  createReservation,
+  cancelReservation
+} from '../services/reservationService';
 
 export function useReservation(menuItem: MenuItem, user: User | null) {
   const [isReserving, setIsReserving] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [hasReservation, setHasReservation] = useState(false);
 
-  const checkReservation = useCallback(async () => {
+  const checkUserReservation = useCallback(async () => {
     if (!user) return false;
     
     try {
-      const { data, error } = await supabase
-        .from('reservations')
-        .select('id, status')
-        .eq('user_id', user.id)
-        .eq('menu_item_id', menuItem.id)
-        .maybeSingle();
-      
-      if (error) throw error;
-      return data?.status === 'confirmed';
+      return await checkReservation(user.id, menuItem.id);
     } catch (error) {
       console.error('Check reservation error:', error);
       return false;
@@ -31,7 +27,7 @@ export function useReservation(menuItem: MenuItem, user: User | null) {
     let mounted = true;
 
     if (user) {
-      checkReservation().then((hasRes) => {
+      checkUserReservation().then((hasRes) => {
         if (mounted) {
           setHasReservation(hasRes);
         }
@@ -43,7 +39,7 @@ export function useReservation(menuItem: MenuItem, user: User | null) {
     return () => {
       mounted = false;
     };
-  }, [user, checkReservation]);
+  }, [user, checkUserReservation]);
 
   const reserve = async () => {
     if (!user) {
@@ -54,87 +50,17 @@ export function useReservation(menuItem: MenuItem, user: User | null) {
     setIsReserving(true);
 
     try {
-      // Check for any existing reservation (confirmed or cancelled)
-      const { data: existingReservation } = await supabase
-        .from('reservations')
-        .select('id, status')
-        .eq('user_id', user.id)
-        .eq('menu_item_id', menuItem.id)
-        .maybeSingle();
-
-      if (existingReservation) {
-        if (existingReservation.status === 'confirmed') {
-          toast.error('You already have an active reservation for this meal');
-          return null;
-        }
-
-        // If there's a cancelled reservation, update it instead of creating a new one
-        const { data: updatedMenuItem, error: updateError } = await supabase.rpc(
-          'reactivate_reservation',
-          {
-            p_reservation_id: existingReservation.id,
-            p_menu_item_id: menuItem.id
-          }
-        );
-
-        if (updateError) throw updateError;
-        if (!updatedMenuItem) throw new Error('Failed to reactivate reservation');
-
-        setHasReservation(true);
-        toast.success('Reservation confirmed!');
-
-        return {
-          id: updatedMenuItem.id,
-          name: updatedMenuItem.name,
-          description: updatedMenuItem.description,
-          imageUrl: updatedMenuItem.image_url,
-          price: updatedMenuItem.price,
-          date: updatedMenuItem.date,
-          quota: updatedMenuItem.quota,
-          reservations: updatedMenuItem.reservations,
-          dietaryTags: updatedMenuItem.dietary_tags
-        };
-      }
-
-      // If no existing reservation, create a new one
-      const { data: result, error } = await supabase.rpc(
-        'create_reservation',
-        {
-          p_user_id: user.id,
-          p_menu_item_id: menuItem.id
-        }
-      );
-
-      if (error) {
-        if (error.message.includes('No available spots')) {
-          toast.error('No available spots left for this meal');
-        } else {
-          throw error;
-        }
-        return null;
-      }
-
-      if (!result) {
-        throw new Error('Failed to create reservation');
-      }
-
+      const updatedMenuItem = await createReservation(user.id, menuItem.id);
       setHasReservation(true);
       toast.success('Reservation confirmed!');
-      
-      return {
-        id: result.id,
-        name: result.name,
-        description: result.description,
-        imageUrl: result.image_url,
-        price: result.price,
-        date: result.date,
-        quota: result.quota,
-        reservations: result.reservations,
-        dietaryTags: result.dietary_tags
-      };
+      return updatedMenuItem;
     } catch (error: any) {
       console.error('Reservation error:', error);
-      toast.error('Failed to make reservation. Please try again.');
+      if (error.message.includes('No available spots')) {
+        toast.error('No available spots left for this meal');
+      } else {
+        toast.error('Failed to make reservation. Please try again.');
+      }
       return null;
     } finally {
       setIsReserving(false);
@@ -150,44 +76,17 @@ export function useReservation(menuItem: MenuItem, user: User | null) {
     setIsCancelling(true);
 
     try {
-      const { data: result, error } = await supabase.rpc(
-        'cancel_reservation',
-        {
-          p_user_id: user.id,
-          p_menu_item_id: menuItem.id
-        }
-      );
-
-      if (error) {
-        if (error.message.includes('No active reservation found')) {
-          toast.error('No active reservation found');
-        } else {
-          throw error;
-        }
-        return null;
-      }
-
-      if (!result) {
-        throw new Error('Failed to cancel reservation');
-      }
-
+      const updatedMenuItem = await cancelReservation(user.id, menuItem.id);
       setHasReservation(false);
       toast.success('Reservation cancelled successfully');
-      
-      return {
-        id: result.id,
-        name: result.name,
-        description: result.description,
-        imageUrl: result.image_url,
-        price: result.price,
-        date: result.date,
-        quota: result.quota,
-        reservations: result.reservations,
-        dietaryTags: result.dietary_tags
-      };
+      return updatedMenuItem;
     } catch (error: any) {
       console.error('Cancellation error:', error);
-      toast.error('Failed to cancel reservation. Please try again.');
+      if (error.message.includes('No active reservation found')) {
+        toast.error('No active reservation found');
+      } else {
+        toast.error('Failed to cancel reservation. Please try again.');
+      }
       return null;
     } finally {
       setIsCancelling(false);
@@ -199,7 +98,7 @@ export function useReservation(menuItem: MenuItem, user: User | null) {
     isCancelling,
     hasReservation,
     setHasReservation,
-    checkReservation,
+    checkReservation: checkUserReservation,
     reserve,
     cancel
   };
