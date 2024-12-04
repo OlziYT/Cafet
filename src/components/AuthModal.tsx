@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/auth';
 import toast from 'react-hot-toast';
@@ -13,6 +13,7 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,7 +79,9 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'signup' && (
             <div>
-              <label className="block text-sm font-medium text-marron-700 dark:text-marron-200 mb-1">Nom complet</label>
+              <label className="block text-sm font-medium text-marron-700 dark:text-marron-200 mb-1">
+                Nom complet
+              </label>
               <input
                 type="text"
                 required
@@ -91,7 +94,9 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-marron-700 dark:text-marron-200 mb-1">Email</label>
+            <label className="block text-sm font-medium text-marron-700 dark:text-marron-200 mb-1">
+              Email
+            </label>
             <input
               type="email"
               required
@@ -103,15 +108,30 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-marron-700 dark:text-marron-200 mb-1">Mot de passe</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-marron-200 dark:border-marron-600 bg-white dark:bg-marron-800 text-marron-800 dark:text-marron-100 focus:border-olive-500 dark:focus:border-olive-400 focus:ring-2 focus:ring-olive-200 dark:focus:ring-olive-900 transition-colors"
-              placeholder="••••••••"
-            />
+            <label className="block text-sm font-medium text-marron-700 dark:text-marron-200 mb-1">
+              Mot de passe
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-lg border border-marron-200 dark:border-marron-600 bg-white dark:bg-marron-800 text-marron-800 dark:text-marron-100 focus:border-olive-500 dark:focus:border-olive-400 focus:ring-2 focus:ring-olive-200 dark:focus:ring-olive-900 transition-colors pr-12"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-marron-400 hover:text-marron-600 dark:text-marron-500 dark:hover:text-marron-300 transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
 
           {mode === 'signin' && (
@@ -132,9 +152,13 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-olive-600 dark:bg-olive-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-olive-700 dark:hover:bg-olive-600 disabled:opacity-50 transition-colors mt-6"
+            className="w-full bg-gradient-to-br from-olive-500 to-olive-600 dark:from-olive-600 dark:to-olive-700 text-white py-3 px-4 rounded-lg font-medium hover:from-olive-600 hover:to-olive-700 dark:hover:from-olive-500 dark:hover:to-olive-600 disabled:opacity-50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg disabled:hover:transform-none disabled:hover:shadow-none mt-6"
           >
-            {loading ? 'Chargement...' : mode === 'signin' ? 'Se connecter' : 'Créer mon compte'}
+            {loading ? (
+              <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+            ) : (
+              mode === 'signin' ? 'Se connecter' : 'Créer mon compte'
+            )}
           </button>
         </form>
 
